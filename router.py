@@ -44,7 +44,7 @@ if __name__ == "__main__":
             deals = Deal.query.filter_by(category = "computers/laptops-ultrabooks").all()
             print(str(deals))
     else:
-        app.run(debug=True, port=8000)
+        app.run(debug=False, port=8000)
 
 
 
