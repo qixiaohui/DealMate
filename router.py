@@ -1,8 +1,8 @@
 import sys
 from flask import Flask, jsonify, abort, request
-from models.deal import Deal, db
+from models.deal import Deal, DealDetail, db
 from scrape.categoryList import categoryList
-from models.dealSchema import ma, deals_schema
+from models.dealSchema import ma, deals_schema, deal_detail_schema
 from scrape.dealScrapper import scrape_deal
 
 app = Flask(__name__)
@@ -19,6 +19,13 @@ def get_deals_by_category(category, subcategory = None):
     else:
         deals = Deal.query.filter_by(category = str(category + "/" + subcategory)).all()
     return deals_schema.jsonify(deals)
+
+
+@app.route("/detail/<int:id>", methods = ["GET"])
+def get_deal_detail(id):
+    if id is not None:
+        deal_detail = DealDetail.query.filter_by(id = id).first()
+    return deal_detail_schema.jsonify(deal_detail)
 
 
 if __name__ == "__main__":

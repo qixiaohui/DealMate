@@ -1,5 +1,6 @@
 import bs4 as bs
 import urllib
+import json
 from models.deal import Deal, DealDetail
 
 
@@ -14,6 +15,7 @@ def scrape_deal(db, category, subcategory = DEFAULT):
     else:
         base = base + category + "/"+ subcategory
         categoryHolder = category + "/" + subcategory
+    print(categoryHolder)
     src = urllib.urlopen(base)
     soup = bs.BeautifulSoup(src, 'html')
     deals = soup.find("div", {"class": "newest-deals"})
@@ -56,12 +58,27 @@ def scrape_deal(db, category, subcategory = DEFAULT):
             if originalPrice is not None:
                 product_data.listPrice = originalPrice
             #product_data = json.dumps(product_data.__dict__)
-            db.session.add(product_data)
-            # flush will assign a unique id
-            db.session.flush()
             detail_url = "http://www.logicbuy.com" + product_data.detail
-            product_detail_data.deal = product_data.id
-
+            src = urllib.urlopen(detail_url)
+            soup = bs.BeautifulSoup(src, "html")
+            img_container = soup.find("div", {"class": "img-container"})
+            img_url = img_container.find("img", {"class": "deals_image"}, src = True)["src"]
+            if img_url is not None:
+                product_detail_data.mainPoster = img_url
+            product_desc = soup.find("div", {"class": "prod-desc"}).encode('utf-8').strip()
+            if product_desc is not None:
+                product_detail_data.detailDescription = json.dumps(product_desc)
+            expire_div = soup.find("div", {"class": "expire-date"})
+            expire = expire_div.find("span").text.strip()
+            if expire is not None:
+                product_detail_data.expire = expire
+            get_deal = soup.find("a", {"class": "get-deal"}, href = True)["href"]
+            if get_deal is not None:
+                product_detail_data.link = get_deal
+            db.session.add(product_detail_data)
+            db.session.add(product_data)
+            db.session.commit()
+            print(index)
         except AttributeError:
             break
 
