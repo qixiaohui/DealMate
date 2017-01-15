@@ -1,6 +1,6 @@
 import bs4 as bs
 import urllib
-from models.deal import Deal
+from models.deal import Deal, DealDetail
 
 
 DEFAULT = object()
@@ -22,6 +22,7 @@ def scrape_deal(db, category, subcategory = DEFAULT):
     productList = ulList.findAll("li")
     for index, product in enumerate(productList):
         product_data = Deal()
+        product_detail_data = DealDetail()
         try:
             product_data.category = categoryHolder
             if product is None:
@@ -56,7 +57,11 @@ def scrape_deal(db, category, subcategory = DEFAULT):
                 product_data.listPrice = originalPrice
             #product_data = json.dumps(product_data.__dict__)
             db.session.add(product_data)
-            db.session.commit()
+            # flush will assign a unique id
+            db.session.flush()
+            detail_url = "http://www.logicbuy.com" + product_data.detail
+            product_detail_data.deal = product_data.id
+
         except AttributeError:
             break
 
