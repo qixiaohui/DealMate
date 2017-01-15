@@ -11,7 +11,7 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///review.db"
 db.init_app(app)
 ma.init_app(app)
 
-
+@app.route("/deals/<category>", methods = ["GET"])
 @app.route("/deals/<category>/<subcategory>", methods = ["GET"])
 def get_deals_by_category(category, subcategory = None):
     if subcategory is None:
