@@ -16,6 +16,19 @@ def scrape_deal(db, category, subcategory = DEFAULT):
         base = base + category + "/"+ subcategory
         categoryHolder = category + "/" + subcategory
     print(categoryHolder)
+    # remove previous
+    try:
+        if subcategory == DEFAULT:
+            deals = Deal.query.filter_by(category = str(category))
+        else:
+            deals = Deal.query.filter_by(category = str(category + "/" + subcategory))
+        for deal in deals:
+            DealDetail.query.filter_by(id = deal.id).delete()
+            db.session.commit()
+        deals.delete()
+        db.session.commit()
+    except AttributeError:
+        print(AttributeError)
     src = urllib.urlopen(base)
     soup = bs.BeautifulSoup(src, 'html')
     deals = soup.find("div", {"class": "newest-deals"})
