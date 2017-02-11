@@ -27,6 +27,16 @@ def get_deal_detail(id):
         deal_detail = DealDetail.query.filter_by(id = id).first()
     return deal_detail_schema.jsonify(deal_detail)
 
+@app.route("/search", methods = ["GET"])
+def query_deals():
+    query = request.args.get('content')
+    searchResult = Deal.query.filter(Deal.category.contains(query)).all()
+    if searchResult is None:
+        return [];
+    else:
+        return deals_schema.jsonify(searchResult)
+
+
 
 if __name__ == "__main__":
     if "create_db" in sys.argv:
