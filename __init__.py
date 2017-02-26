@@ -30,9 +30,12 @@ def get_deal_detail(id):
 @app.route("/search", methods = ["GET"])
 def query_deals():
     query = request.args.get('content')
-    searchResult = Deal.query.filter(Deal.category.contains(query)).all()
+    searchResult = []
+    searchResult.extend(Deal.query.filter(Deal.category.contains(query)).all());
+    searchResult.extend(Deal.query.filter(Deal.title.contains(query)).all());
+    searchResult.extend(Deal.query.filter(Deal.overview.contains(query)).all());
     if searchResult is None:
-        return [];
+        return []
     else:
         return deals_schema.jsonify(searchResult)
 
