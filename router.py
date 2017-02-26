@@ -11,7 +11,6 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///review.db"
 db.init_app(app)
 ma.init_app(app)
 
-@app.route("/deals/<category>", methods = ["GET"])
 @app.route("/deals/<category>/<subcategory>", methods = ["GET"])
 def get_deals_by_category(category, subcategory = None):
     if subcategory is None:
@@ -26,6 +25,10 @@ def get_deal_detail(id):
     if id is not None:
         deal_detail = DealDetail.query.filter_by(id = id).first()
     return deal_detail_schema.jsonify(deal_detail)
+
+# @app.route("/coupon", methods = ["GET"])
+# def get_coupons():
+
 
 
 if __name__ == "__main__":
