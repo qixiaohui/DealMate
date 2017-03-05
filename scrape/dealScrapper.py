@@ -29,7 +29,11 @@ def scrape_deal(db, category, subcategory = DEFAULT):
         db.session.commit()
     except AttributeError:
         print(AttributeError)
-    src = urllib.urlopen(base)
+    try:
+        src = urllib.urlopen(base)
+    except IOError as e:
+        print(e)
+        return
     soup = bs.BeautifulSoup(src, 'html')
     deals = soup.find("div", {"class": "newest-deals"})
     # find the parent list view
